@@ -1,97 +1,136 @@
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Payment Form | Sigma Checkout</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <style>
-      /* 内联样式确保主题色立即生效，避免闪烁 */
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-      }
-      html.light,
-      html.light body {
-        background-color: #ffffff !important;
-        color: #000000;
-      }
-      html.dark,
-      html.dark body {
-        background-color: #1a1a1a !important;
-        color: #ffffff;
-      }
-    </style>
-    <script>
-      // 在 React 加载前立即设置主题，避免闪烁
-      (function () {
-        const isInIframe = window.self !== window.top;
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Form | Sigma Checkout</title>
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+  <!-- Background blobs -->
+  <div class="bg-blob blob-1"></div>
+  <div class="bg-blob blob-2"></div>
+  <div class="bg-blob blob-3"></div>
 
-        function applyThemeToDOM(theme) {
-          document.documentElement.classList.remove("light", "dark");
-          document.documentElement.classList.add(theme);
-          document.documentElement.setAttribute("data-theme", theme);
-        }
+  <div class="container">
+    <!-- Card Preview -->
+    <div class="card-section">
+      <div class="credit-card">
+        <div class="card-circle card-circle-1"></div>
+        <div class="card-circle card-circle-2"></div>
+        <div class="card-chip"></div>
+        <div class="card-brand" id="cardBrand">💳</div>
+        <div class="card-number" id="cardNumber">•••• •••• •••• ••••</div>
+        <div class="card-holder-name" id="cardHolder">ТАЙЛЕР Д.</div>
+        <div class="card-expiry-wrap">
+          <span class="card-expiry-label">Expires</span>
+          <span class="card-expiry" id="cardExpiry">MM/YY</span>
+        </div>
+      </div>
+    </div>
 
-        if (isInIframe) {
-          // 监听父窗口主动推送的主题消息
-          window.addEventListener("message", function (event) {
-            if (event.data && typeof event.data.theme === "string") {
-              const theme = event.data.theme;
-              if (theme === "light" || theme === "dark") {
-                applyThemeToDOM(theme);
-              }
-            }
-          });
-        } else {
-          // 非 iframe 环境，使用默认 light 主题
-          applyThemeToDOM("light");
-        }
-      })();
-    </script>
-      <script>
-      (function () {
-        if (window.self === window.top) return;
-        var reported = {};
-        window.addEventListener("error", function (event) {
-          // 资源加载失败的 error 事件没有 message，此处仅上报 JS 运行时错误
-          if (!event || !event.message) return;
-          var key =
-            event.message + "|" + (event.filename || "") + "|" + (event.lineno || 0);
-          if (reported[key]) return; // 相同错误只上报一次，避免渲染循环刷屏
-          reported[key] = true;
-          try {
-            window.parent.postMessage(
-              {
-                type: "sandbox-runtime-error",
-                payload: {
-                  message: String(event.message).slice(0, 500),
-                  filename: event.filename || "",
-                  lineno: event.lineno || 0,
-                  colno: event.colno || 0,
-                  stack:
-                    event.error && event.error.stack
-                      ? String(event.error.stack).slice(0, 2000)
-                      : ""
-                }
-              },
-              "*"
-            );
-          } catch (e) {
-            /* 上报失败不影响页面运行 */
-          }
-        });
-      })();
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+    <!-- Form -->
+    <div class="form-section">
+      <div class="form-container">
+        <div class="form-header">
+          <h1>💀 Оплата</h1>
+          <p>«Лишь утратив всё до конца, мы обретаем свободу.» — Тайлер Дерден</p>
+        </div>
+
+        <form id="paymentForm" novalidate>
+          <!-- Personal Info -->
+          <div class="section-title">
+            <div class="dot"></div>
+            <span>Личные данные</span>
+          </div>
+          <div class="form-grid form-grid-3">
+            <div class="input-group" id="group-firstName">
+              <label for="firstName">Имя</label>
+              <div class="input-wrapper">
+                <input type="text" id="firstName" name="firstName" placeholder="Тайлер" autocomplete="given-name" />
+              </div>
+              <div class="error-message" id="error-firstName">⚠️ <span></span></div>
+            </div>
+            <div class="input-group" id="group-lastName">
+              <label for="lastName">Фамилия</label>
+              <div class="input-wrapper">
+                <input type="text" id="lastName" name="lastName" placeholder="Дерден" autocomplete="family-name" />
+              </div>
+              <div class="error-message" id="error-lastName">⚠️ <span></span></div>
+            </div>
+            <div class="input-group" id="group-middleName">
+              <label for="middleName">Отчество</label>
+              <div class="input-wrapper">
+                <input type="text" id="middleName" name="middleName" placeholder="Сигмович" autocomplete="additional-name" />
+              </div>
+              <div class="error-message" id="error-middleName">⚠️ <span></span></div>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="mt-16">
+            <div class="input-group" id="group-email">
+              <label for="email">Email</label>
+              <div class="input-wrapper">
+                <span class="icon">✉️</span>
+                <input type="email" id="email" name="email" class="has-icon" placeholder="tyler@fightclub.com" autocomplete="email" />
+              </div>
+              <div class="error-message" id="error-email">⚠️ <span></span></div>
+            </div>
+          </div>
+
+          <!-- Card Data -->
+          <div class="section-title">
+            <div class="dot"></div>
+            <span>Данные карты</span>
+          </div>
+          <div class="form-grid">
+            <div class="input-group" id="group-cardNumber">
+              <label for="cardNumberInput">Номер карты</label>
+              <div class="input-wrapper">
+                <span class="icon">💳</span>
+                <input type="text" id="cardNumberInput" name="cardNumber" class="has-icon" placeholder="4242 4242 4242 4242" maxlength="19" inputmode="numeric" autocomplete="cc-number" />
+              </div>
+              <div class="error-message" id="error-cardNumber">⚠️ <span></span></div>
+            </div>
+          </div>
+          <div class="form-grid form-grid-2 mt-16">
+            <div class="input-group" id="group-expiry">
+              <label for="expiry">Срок действия</label>
+              <div class="input-wrapper">
+                <span class="icon">📅</span>
+                <input type="text" id="expiry" name="expiry" class="has-icon" placeholder="MM/YY" maxlength="5" inputmode="numeric" autocomplete="cc-exp" />
+              </div>
+              <div class="error-message" id="error-expiry">⚠️ <span></span></div>
+            </div>
+            <div class="input-group" id="group-cvv">
+              <label for="cvv">CVV</label>
+              <div class="input-wrapper">
+                <span class="icon">🔒</span>
+                <input type="password" id="cvv" name="cvv" class="has-icon" placeholder="•••" maxlength="4" inputmode="numeric" autocomplete="cc-csc" />
+              </div>
+              <div class="error-message" id="error-cvv">⚠️ <span></span></div>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">Оплатить 💀</button>
+          <p class="security-note">🔐 Данные защищены шифрованием. Мы не храним данные карт.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Screen -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-card">
+      <div class="success-icon">✅</div>
+      <h2>Оплата прошла!</h2>
+      <p>Первое правило бойцовского клуба:</p>
+      <p class="quote">Не рассказывать никому об успешной оплате.</p>
+      <button class="reset-btn" id="resetBtn">Ещё раз</button>
+    </div>
+  </div>
+
+  <script src="./src/script.js" type="module"></script>
+</body>
 </html>
