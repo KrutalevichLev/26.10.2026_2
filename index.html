@@ -1,97 +1,899 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Payment Form | Sigma Checkout</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
     <style>
-      /* 内联样式确保主题色立即生效，避免闪烁 */
-      html,
-      body {
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+      * {
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e, #0f0f0f);
+        background-size: 400% 400%;
+        animation: gradientShift 12s ease infinite;
+        padding: 20px;
+        overflow-x: hidden;
+      }
+
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(-2deg); }
+        50% { transform: translateY(-12px) rotate(1deg); }
+      }
+
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+      }
+
+      @keyframes pulseGlow {
+        0%, 100% { box-shadow: 0 0 20px rgba(220, 38, 38, 0.2); }
+        50% { box-shadow: 0 0 40px rgba(220, 38, 38, 0.5); }
+      }
+
+      @keyframes successPop {
+        0% { transform: scale(0); opacity: 0; }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); opacity: 1; }
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      .bg-blob {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(80px);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .bg-blob-1 {
+        top: 20%;
+        left: 15%;
+        width: 400px;
+        height: 400px;
+        background: rgba(220, 38, 38, 0.08);
+      }
+
+      .bg-blob-2 {
+        bottom: 20%;
+        right: 15%;
+        width: 350px;
+        height: 350px;
+        background: rgba(139, 0, 0, 0.08);
+      }
+
+      .bg-blob-3 {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 500px;
+        height: 500px;
+        background: rgba(220, 38, 38, 0.04);
+      }
+
+      .container {
+        position: relative;
+        z-index: 1;
         width: 100%;
-        height: 100%;
+        max-width: 1100px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
       }
-      html.light,
-      html.light body {
-        background-color: #ffffff !important;
-        color: #000000;
+
+      @media (min-width: 1024px) {
+        .container {
+          flex-direction: row;
+          align-items: center;
+        }
       }
-      html.dark,
-      html.dark body {
-        background-color: #1a1a1a !important;
-        color: #ffffff;
+
+      /* Card Preview */
+      .card-section {
+        display: flex;
+        justify-content: center;
+        width: 100%;
       }
+
+      @media (min-width: 1024px) {
+        .card-section {
+          width: 40%;
+        }
+      }
+
+      .credit-card {
+        width: 340px;
+        height: 210px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #1a1a2e 0%, #2d1b3d 40%, #3d0f0f 100%);
+        border: 1px solid rgba(220, 38, 38, 0.3);
+        position: relative;
+        overflow: hidden;
+        animation: float 6s ease-in-out infinite;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(220, 38, 38, 0.1);
+        padding: 30px;
+      }
+
+      .credit-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(220, 38, 38, 0.05) 0%, transparent 70%);
+      }
+
+      .card-chip {
+        width: 50px;
+        height: 38px;
+        background: linear-gradient(135deg, #d4a853, #b8860b, #d4a853);
+        border-radius: 6px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card-chip::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 30px;
+        height: 22px;
+        border: 1.5px solid rgba(0,0,0,0.3);
+        border-radius: 3px;
+      }
+
+      .card-brand {
+        position: absolute;
+        top: 25px;
+        right: 30px;
+        font-size: 22px;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.7);
+        letter-spacing: 2px;
+      }
+
+      .card-number {
+        position: absolute;
+        bottom: 75px;
+        left: 30px;
+        right: 30px;
+        font-size: 20px;
+        font-family: 'Courier New', monospace;
+        color: white;
+        letter-spacing: 3px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      }
+
+      .card-holder-label, .card-expiry-label {
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: rgba(255, 255, 255, 0.4);
+        margin-bottom: 4px;
+      }
+
+      .card-holder-name {
+        position: absolute;
+        bottom: 25px;
+        left: 30px;
+        font-size: 13px;
+        color: white;
+        font-weight: 500;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .card-expiry {
+        position: absolute;
+        bottom: 25px;
+        right: 30px;
+        font-size: 13px;
+        color: white;
+        font-family: 'Courier New', monospace;
+      }
+
+      .card-circle-1 {
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 130px;
+        height: 130px;
+        background: rgba(220, 38, 38, 0.15);
+        border-radius: 50%;
+      }
+
+      .card-circle-2 {
+        position: absolute;
+        bottom: -30px;
+        right: 30px;
+        width: 90px;
+        height: 90px;
+        background: rgba(139, 0, 0, 0.15);
+        border-radius: 50%;
+      }
+
+      /* Form Section */
+      .form-section {
+        width: 100%;
+      }
+
+      @media (min-width: 1024px) {
+        .form-section {
+          width: 60%;
+        }
+      }
+
+      .form-container {
+        background: rgba(15, 15, 15, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.6s ease-out;
+      }
+
+      @media (max-width: 640px) {
+        .form-container {
+          padding: 24px;
+        }
+      }
+
+      .form-header h1 {
+        font-size: 32px;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 8px;
+      }
+
+      .form-header p {
+        color: #9ca3af;
+        font-size: 14px;
+        font-style: italic;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        margin-top: 28px;
+      }
+
+      .section-title .dot {
+        width: 8px;
+        height: 8px;
+        background: #dc2626;
+        border-radius: 50%;
+      }
+
+      .section-title span {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #f87171;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .form-grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .form-grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (max-width: 640px) {
+        .form-grid-3, .form-grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .input-group.shake {
+        animation: shake 0.5s ease-in-out;
+      }
+
+      .input-group label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #d1d5db;
+        margin-bottom: 6px;
+      }
+
+      .input-wrapper {
+        position: relative;
+      }
+
+      .input-wrapper .icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 16px;
+      }
+
+      .input-wrapper input {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 12px;
+        background: rgba(17, 17, 17, 0.9);
+        border: 1px solid rgba(75, 75, 75, 0.5);
+        color: white;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        transition: all 0.3s ease;
+        outline: none;
+      }
+
+      .input-wrapper input.has-icon {
+        padding-left: 42px;
+      }
+
+      .input-wrapper input::placeholder {
+        color: #4b5563;
+      }
+
+      .input-wrapper input:hover {
+        border-color: rgba(107, 107, 107, 0.7);
+      }
+
+      .input-wrapper input:focus {
+        border-color: rgba(220, 38, 38, 0.5);
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+      }
+
+      .input-wrapper input.error {
+        border-color: rgba(239, 68, 68, 0.6);
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+      }
+
+      .error-message {
+        font-size: 11px;
+        color: #f87171;
+        margin-top: 6px;
+        display: none;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .error-message.visible {
+        display: flex;
+      }
+
+      /* Submit Button */
+      .submit-btn {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: 14px;
+        font-size: 17px;
+        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        color: white;
+        background: linear-gradient(135deg, #dc2626, #991b1b);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 28px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .submit-btn:hover:not(:disabled) {
+        transform: scale(1.02);
+        box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
+      }
+
+      .submit-btn:active:not(:disabled) {
+        transform: scale(0.98);
+      }
+
+      .submit-btn:disabled {
+        background: #374151;
+        color: #9ca3af;
+        cursor: not-allowed;
+      }
+
+      .submit-btn .spinner {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-right: 10px;
+        vertical-align: middle;
+      }
+
+      .security-note {
+        text-align: center;
+        color: #6b7280;
+        font-size: 12px;
+        margin-top: 16px;
+      }
+
+      /* Success Screen */
+      .success-screen {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #0f0f0f);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+
+      .success-screen.visible {
+        display: flex;
+      }
+
+      .success-card {
+        background: rgba(15, 15, 15, 0.85);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 50px;
+        text-align: center;
+        max-width: 420px;
+        margin: 20px;
+        animation: slideUp 0.6s ease-out;
+      }
+
+      .success-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+        animation: successPop 0.6s ease-out;
+      }
+
+      .success-card h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 16px;
+      }
+
+      .success-card p {
+        color: #9ca3af;
+        margin-bottom: 8px;
+      }
+
+      .success-card .quote {
+        color: #f87171;
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 24px;
+      }
+
+      .reset-btn {
+        padding: 12px 32px;
+        background: linear-gradient(135deg, #dc2626, #991b1b);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .reset-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: #0a0a0a; }
+      ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 3px; }
     </style>
-    <script>
-      // 在 React 加载前立即设置主题，避免闪烁
-      (function () {
-        const isInIframe = window.self !== window.top;
-
-        function applyThemeToDOM(theme) {
-          document.documentElement.classList.remove("light", "dark");
-          document.documentElement.classList.add(theme);
-          document.documentElement.setAttribute("data-theme", theme);
-        }
-
-        if (isInIframe) {
-          // 监听父窗口主动推送的主题消息
-          window.addEventListener("message", function (event) {
-            if (event.data && typeof event.data.theme === "string") {
-              const theme = event.data.theme;
-              if (theme === "light" || theme === "dark") {
-                applyThemeToDOM(theme);
-              }
-            }
-          });
-        } else {
-          // 非 iframe 环境，使用默认 light 主题
-          applyThemeToDOM("light");
-        }
-      })();
-    </script>
-      <script>
-      (function () {
-        if (window.self === window.top) return;
-        var reported = {};
-        window.addEventListener("error", function (event) {
-          // 资源加载失败的 error 事件没有 message，此处仅上报 JS 运行时错误
-          if (!event || !event.message) return;
-          var key =
-            event.message + "|" + (event.filename || "") + "|" + (event.lineno || 0);
-          if (reported[key]) return; // 相同错误只上报一次，避免渲染循环刷屏
-          reported[key] = true;
-          try {
-            window.parent.postMessage(
-              {
-                type: "sandbox-runtime-error",
-                payload: {
-                  message: String(event.message).slice(0, 500),
-                  filename: event.filename || "",
-                  lineno: event.lineno || 0,
-                  colno: event.colno || 0,
-                  stack:
-                    event.error && event.error.stack
-                      ? String(event.error.stack).slice(0, 2000)
-                      : ""
-                }
-              },
-              "*"
-            );
-          } catch (e) {
-            /* 上报失败不影响页面运行 */
-          }
-        });
-      })();
-    </script>
   </head>
   <body>
+    <!-- Background blobs -->
+    <div class="bg-blob bg-blob-1"></div>
+    <div class="bg-blob bg-blob-2"></div>
+    <div class="bg-blob bg-blob-3"></div>
+
+    <div class="container">
+      <!-- Card Preview -->
+      <div class="card-section">
+        <div class="credit-card">
+          <div class="card-circle-1"></div>
+          <div class="card-circle-2"></div>
+          <div class="card-chip"></div>
+          <div class="card-brand" id="cardBrand">💳</div>
+          <div class="card-number" id="cardNumber">•••• •••• •••• ••••</div>
+          <div class="card-holder-name" id="cardHolder">ТАЙЛЕР Д.</div>
+          <div class="card-expiry-label" style="position:absolute;bottom:48px;right:30px;">Expires</div>
+          <div class="card-expiry" id="cardExpiry">MM/YY</div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="form-section">
+        <div class="form-container">
+          <div class="form-header">
+            <h1>💀 Оплата</h1>
+            <p>«Лишь утратив всё до конца, мы обретаем свободу.» — Тайлер Дерден</p>
+          </div>
+
+          <form id="paymentForm" novalidate>
+            <!-- Personal Info -->
+            <div class="section-title">
+              <div class="dot"></div>
+              <span>Личные данные</span>
+            </div>
+            <div class="form-grid form-grid-3">
+              <div class="input-group" id="group-firstName">
+                <label for="firstName">Имя</label>
+                <div class="input-wrapper">
+                  <input type="text" id="firstName" name="firstName" placeholder="Тайлер" autocomplete="given-name" />
+                </div>
+                <div class="error-message" id="error-firstName">⚠️ <span></span></div>
+              </div>
+              <div class="input-group" id="group-lastName">
+                <label for="lastName">Фамилия</label>
+                <div class="input-wrapper">
+                  <input type="text" id="lastName" name="lastName" placeholder="Дерден" autocomplete="family-name" />
+                </div>
+                <div class="error-message" id="error-lastName">⚠️ <span></span></div>
+              </div>
+              <div class="input-group" id="group-middleName">
+                <label for="middleName">Отчество</label>
+                <div class="input-wrapper">
+                  <input type="text" id="middleName" name="middleName" placeholder="Сигмович" autocomplete="additional-name" />
+                </div>
+                <div class="error-message" id="error-middleName">⚠️ <span></span></div>
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div style="margin-top: 16px;">
+              <div class="input-group" id="group-email">
+                <label for="email">Email</label>
+                <div class="input-wrapper">
+                  <span class="icon">✉️</span>
+                  <input type="email" id="email" name="email" class="has-icon" placeholder="tyler@fightclub.com" autocomplete="email" />
+                </div>
+                <div class="error-message" id="error-email">⚠️ <span></span></div>
+              </div>
+            </div>
+
+            <!-- Card Data -->
+            <div class="section-title">
+              <div class="dot"></div>
+              <span>Данные карты</span>
+            </div>
+            <div class="form-grid">
+              <div class="input-group" id="group-cardNumber">
+                <label for="cardNumber">Номер карты</label>
+                <div class="input-wrapper">
+                  <span class="icon">💳</span>
+                  <input type="text" id="cardNumberInput" name="cardNumber" class="has-icon" placeholder="4242 4242 4242 4242" maxlength="19" inputmode="numeric" autocomplete="cc-number" />
+                </div>
+                <div class="error-message" id="error-cardNumber">⚠️ <span></span></div>
+              </div>
+            </div>
+            <div class="form-grid form-grid-2" style="margin-top: 16px;">
+              <div class="input-group" id="group-expiry">
+                <label for="expiry">Срок действия</label>
+                <div class="input-wrapper">
+                  <span class="icon">📅</span>
+                  <input type="text" id="expiry" name="expiry" class="has-icon" placeholder="MM/YY" maxlength="5" inputmode="numeric" autocomplete="cc-exp" />
+                </div>
+                <div class="error-message" id="error-expiry">⚠️ <span></span></div>
+              </div>
+              <div class="input-group" id="group-cvv">
+                <label for="cvv">CVV</label>
+                <div class="input-wrapper">
+                  <span class="icon">🔒</span>
+                  <input type="password" id="cvv" name="cvv" class="has-icon" placeholder="•••" maxlength="4" inputmode="numeric" autocomplete="cc-csc" />
+                </div>
+                <div class="error-message" id="error-cvv">⚠️ <span></span></div>
+              </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Оплатить 💀</button>
+            <p class="security-note">🔐 Данные защищены шифрованием. Мы не храним данные карт.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Screen -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-card">
+        <div class="success-icon">✅</div>
+        <h2>Оплата прошла!</h2>
+        <p>Первое правило бойцовского клуба:</p>
+        <p class="quote">Не рассказывать никому об успешной оплате.</p>
+        <button class="reset-btn" id="resetBtn">Ещё раз</button>
+      </div>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <script>
+      // ====== PAYMENT FORM LOGIC ======
+      const form = document.getElementById('paymentForm');
+      const submitBtn = document.getElementById('submitBtn');
+      const successScreen = document.getElementById('successScreen');
+      const resetBtn = document.getElementById('resetBtn');
+
+      // Card preview elements
+      const cardNumberEl = document.getElementById('cardNumber');
+      const cardHolderEl = document.getElementById('cardHolder');
+      const cardExpiryEl = document.getElementById('cardExpiry');
+      const cardBrandEl = document.getElementById('cardBrand');
+
+      // Input elements
+      const firstNameInput = document.getElementById('firstName');
+      const lastNameInput = document.getElementById('lastName');
+      const middleNameInput = document.getElementById('middleName');
+      const emailInput = document.getElementById('email');
+      const cardNumberInput = document.getElementById('cardNumberInput');
+      const expiryInput = document.getElementById('expiry');
+      const cvvInput = document.getElementById('cvv');
+
+      const touched = {};
+
+      // ====== FORMATTERS ======
+      function formatCardNumber(value) {
+        const digits = value.replace(/\D/g, '').slice(0, 16);
+        const groups = digits.match(/.{1,4}/g);
+        return groups ? groups.join(' ') : digits;
+      }
+
+      function formatExpiry(value) {
+        const digits = value.replace(/\D/g, '').slice(0, 4);
+        if (digits.length >= 2) {
+          return digits.slice(0, 2) + '/' + digits.slice(2, 4);
+        }
+        return digits;
+      }
+
+      function getCardType(number) {
+        const cleaned = number.replace(/\s/g, '');
+        if (cleaned.startsWith('4')) return 'VISA';
+        if (/^5[1-5]/.test(cleaned) || /^2[2-7]/.test(cleaned)) return 'MC';
+        if (cleaned.startsWith('2200') || cleaned.startsWith('2201')) return 'МИР';
+        return '💳';
+      }
+
+      function luhnCheck(num) {
+        const digits = num.replace(/\s/g, '');
+        if (digits.length < 13 || digits.length > 19) return false;
+        let sum = 0;
+        let isEven = false;
+        for (let i = digits.length - 1; i >= 0; i--) {
+          let digit = parseInt(digits[i], 10);
+          if (isEven) {
+            digit *= 2;
+            if (digit > 9) digit -= 9;
+          }
+          sum += digit;
+          isEven = !isEven;
+        }
+        return sum % 10 === 0;
+      }
+
+      // ====== VALIDATION ======
+      function validateField(name, value) {
+        switch (name) {
+          case 'firstName':
+            if (!value.trim()) return 'Введите имя';
+            if (value.trim().length < 2) return 'Минимум 2 символа';
+            if (!/^[а-яА-ЯёЁa-zA-Z\s-]+$/.test(value)) return 'Только буквы';
+            return null;
+          case 'lastName':
+            if (!value.trim()) return 'Введите фамилию';
+            if (value.trim().length < 2) return 'Минимум 2 символа';
+            if (!/^[а-яА-ЯёЁa-zA-Z\s-]+$/.test(value)) return 'Только буквы';
+            return null;
+          case 'middleName':
+            if (!value.trim()) return 'Введите отчество';
+            if (value.trim().length < 2) return 'Минимум 2 символа';
+            if (!/^[а-яА-ЯёЁa-zA-Z\s-]+$/.test(value)) return 'Только буквы';
+            return null;
+          case 'email':
+            if (!value.trim()) return 'Введите email';
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Некорректный email';
+            return null;
+          case 'cardNumber':
+            if (!value.trim()) return 'Введите номер карты';
+            if (!luhnCheck(value)) return 'Некорректный номер карты';
+            return null;
+          case 'expiry':
+            if (!value.trim()) return 'Введите срок';
+            const parts = value.split('/');
+            if (parts.length !== 2 || parts[0].length !== 2 || parts[1].length !== 2) return 'Формат ММ/ГГ';
+            const month = parseInt(parts[0], 10);
+            const year = parseInt('20' + parts[1], 10);
+            if (month < 1 || month > 12) return 'Некорректный месяц';
+            const now = new Date();
+            const expDate = new Date(year, month);
+            if (expDate < now) return 'Карта просрочена';
+            return null;
+          case 'cvv':
+            if (!value.trim()) return 'Введите CVV';
+            if (!/^\d{3,4}$/.test(value)) return '3 или 4 цифры';
+            return null;
+          default:
+            return null;
+        }
+      }
+
+      function showError(name, message) {
+        const errorEl = document.getElementById('error-' + name);
+        const inputEl = name === 'cardNumber' ? cardNumberInput : document.getElementById(name);
+        const groupEl = document.getElementById('group-' + name);
+
+        if (message) {
+          errorEl.querySelector('span').textContent = message;
+          errorEl.classList.add('visible');
+          inputEl.classList.add('error');
+        } else {
+          errorEl.classList.remove('visible');
+          inputEl.classList.remove('error');
+        }
+      }
+
+      function shakeField(name) {
+        const groupEl = document.getElementById('group-' + name);
+        groupEl.classList.add('shake');
+        setTimeout(() => groupEl.classList.remove('shake'), 500);
+      }
+
+      // ====== UPDATE CARD PREVIEW ======
+      function updateCardPreview() {
+        const num = cardNumberInput.value || '•••• •••• •••• ••••';
+        cardNumberEl.textContent = num;
+
+        const fn = firstNameInput.value || 'ТАЙЛЕР';
+        const ln = lastNameInput.value ? lastNameInput.value[0] + '.' : 'Д.';
+        cardHolderEl.textContent = fn.toUpperCase() + ' ' + ln;
+
+        cardExpiryEl.textContent = expiryInput.value || 'MM/YY';
+        cardBrandEl.textContent = getCardType(cardNumberInput.value);
+      }
+
+      // ====== INPUT HANDLERS ======
+      function handleInput(e) {
+        const input = e.target;
+        const name = input.name;
+        let value = input.value;
+
+        // Format
+        if (name === 'cardNumber') {
+          value = formatCardNumber(value);
+          input.value = value;
+        } else if (name === 'expiry') {
+          value = formatExpiry(value);
+          input.value = value;
+        } else if (name === 'cvv') {
+          value = value.replace(/\D/g, '').slice(0, 4);
+          input.value = value;
+        } else if (['firstName', 'lastName', 'middleName'].includes(name)) {
+          value = value.replace(/[^а-яА-ЯёЁa-zA-Z\s-]/g, '');
+          input.value = value;
+        }
+
+        // Validate if touched
+        if (touched[name]) {
+          const error = validateField(name, value);
+          showError(name, error);
+        }
+
+        updateCardPreview();
+      }
+
+      function handleBlur(e) {
+        const input = e.target;
+        const name = input.name;
+        touched[name] = true;
+        const error = validateField(name, input.value);
+        showError(name, error);
+      }
+
+      // Attach listeners
+      [firstNameInput, lastNameInput, middleNameInput, emailInput, cardNumberInput, expiryInput, cvvInput].forEach(input => {
+        input.addEventListener('input', handleInput);
+        input.addEventListener('blur', handleBlur);
+      });
+
+      // ====== FORM SUBMIT ======
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const fields = ['firstName', 'lastName', 'middleName', 'email', 'cardNumber', 'expiry', 'cvv'];
+        const inputs = { firstName: firstNameInput, lastName: lastNameInput, middleName: middleNameInput, email: emailInput, cardNumber: cardNumberInput, expiry: expiryInput, cvv: cvvInput };
+
+        let hasError = false;
+        let firstErrorField = null;
+
+        fields.forEach(field => {
+          touched[field] = true;
+          const error = validateField(field, inputs[field].value);
+          showError(field, error);
+          if (error && !hasError) {
+            hasError = true;
+            firstErrorField = field;
+          }
+        });
+
+        if (hasError) {
+          shakeField(firstErrorField);
+          return;
+        }
+
+        // Submit
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner"></span> Обработка...';
+
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Оплатить 💀';
+        successScreen.classList.add('visible');
+      });
+
+      // ====== RESET ======
+      resetBtn.addEventListener('click', function() {
+        successScreen.classList.remove('visible');
+        form.reset();
+        Object.keys(touched).forEach(k => delete touched[k]);
+        fields_reset();
+        updateCardPreview();
+      });
+
+      function fields_reset() {
+        ['firstName', 'lastName', 'middleName', 'email', 'cardNumber', 'expiry', 'cvv'].forEach(name => {
+          showError(name, null);
+        });
+      }
+    </script>
   </body>
 </html>
