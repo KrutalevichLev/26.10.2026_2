@@ -263,7 +263,7 @@ export default function App() {
               <div className="absolute bottom-6 left-8">
                 <p className="text-gray-400 text-[10px] uppercase tracking-wider">Card Holder</p>
                 <p className="text-white text-sm font-medium tracking-wide">
-                  {formData.lastName || 'ИВАНОВ'} {formData.firstName ? formData.firstName[0] + '.' : 'И.'}
+                  {formData.firstName || 'ТАЙЛЕР'} {formData.lastName ? formData.lastName[0] + '.' : 'Д.'}
                 </p>
               </div>
 
@@ -304,16 +304,6 @@ export default function App() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <InputField
-                    label="Фамилия"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.lastName ? errors.lastName : undefined}
-                    placeholder="Дерден"
-                    shake={shakeField === 'lastName'}
-                  />
-                  <InputField
                     label="Имя"
                     name="firstName"
                     value={formData.firstName}
@@ -322,6 +312,16 @@ export default function App() {
                     error={touched.firstName ? errors.firstName : undefined}
                     placeholder="Тайлер"
                     shake={shakeField === 'firstName'}
+                  />
+                  <InputField
+                    label="Фамилия"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.lastName ? errors.lastName : undefined}
+                    placeholder="Дерден"
+                    shake={shakeField === 'lastName'}
                   />
                   <InputField
                     label="Отчество"
